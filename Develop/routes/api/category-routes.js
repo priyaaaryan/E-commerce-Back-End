@@ -7,16 +7,23 @@ router.get("/", (req, res) => {
   // find all categories
   // be sure to include its associated Products
   Category.findAll({
-    include: [Product],
+    attributes: ["category_name", "id"],
+    include: [
+      {
+        model: Product,
+        attributes: ["product_name", "price", "stock", "category_id", "id"],
+      },
+    ],
   })
-    .then((dbCategoryData) => {
+    .then((dbPostData) => {
       //const categories = dbCategoryData.map((category) =>
       //  category.get({ plain: true })
       //);
 
-      res.json(dbCategoryData);
+      res.json(dbPostData);
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).json(err);
     });
 });
@@ -24,13 +31,25 @@ router.get("/", (req, res) => {
 router.get("/:id", (req, res) => {
   // find one category by its `id` value
   // be sure to include its associated Products
-  Category.findByPk(req.params.id, {
-    include: [Product],
+  Category.findOne({
+    where: { id: req.params.id },
+    attributes: ["category_name", "id"],
+    include: [
+      {
+        model: Product,
+        attributes: ["product_name", "price", "stock", "category_id", "id"],
+      },
+    ],
   })
-    .then((dbCategoryData) => {
-      res.json(dbCategoryData);
+    .then((dbPostData) => {
+      if (!dbPostData) {
+        res.status(404).json({ message: "No category with that id" });
+        return;
+      }
+      res.json(dbPostData);
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).json(err);
     });
 });
@@ -64,14 +83,18 @@ router.put("/:id", (req, res) => {
       },
     }
   )
-    .then((updatedCategory) => {
-      res.json(updatedCategory);
+    .then((dbPostData) => {
+      if (!dbPostData) {
+        res.status(404).json({ message: "No category with that id" });
+        return;
+      }
+      res.json(dbPostData);
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).json(err);
     });
 });
-
 router.delete("/:id", (req, res) => {
   // delete a category by its `id` value
   Category.destroy({
