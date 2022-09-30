@@ -17,12 +17,16 @@ router.get("/", (req, res) => {
         attributes: ["category_name", "id"],
       },
 
-      { model: Tag, attributes: ["tag_name", "id"] },
+      {
+        model: Tag,
+        attributes: ["tag_name", "id"],
+      },
     ],
   })
-    .then((dbPostData) => res.json(dbPostData))
+    .then((dbPostData) => {
+      res.json(dbPostData);
+    })
     .catch((err) => {
-      console.log(err);
       res.status(500).json(err);
     });
 });
@@ -40,8 +44,10 @@ router.get("/:id", (req, res) => {
         as: "category",
         attributes: ["category_name", "id"],
       },
-
-      { model: Tag, attributes: ["tag_name", "id"] },
+      {
+        model: Tag,
+        attributes: ["tag_name", "id"],
+      },
     ],
   })
     .then((dbPostData) => {
